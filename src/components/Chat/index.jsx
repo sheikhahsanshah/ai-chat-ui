@@ -8,7 +8,7 @@ import { Menu } from "@mui/icons-material";
 
 const Chat = ({ setShowSidebar }) => {
   const scrollableDivRef = useRef(null);
-  const [messages, setMessages] = useState([
+  const [messages] = useState([
     {
       content: "Hello",
       role: "user",
