@@ -16,7 +16,7 @@ import apple from "../../assets/icons/apple.svg";
 import google from "../../assets/icons/google.svg";
 import facebook from "../../assets/icons/facebook.svg";
 
-const SignInButton = styled(Button)({
+const SignInButton = styled(Button)(() => ({
   display: "flex",
   alignItems: "center",
   gap: "6px",
@@ -29,19 +29,27 @@ const SignInButton = styled(Button)({
   "&:hover": {
     boxShadow: "none",
   },
-});
+}));
 
 const Login = () => {
   const history = useHistory();
   const [showPassword, setShowPassword] = useState(false);
   const [captchaVerified, setCaptchaVerified] = useState(false);
+  const [emailOrPhone, setEmailOrPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleCaptchaChange = (value) => setCaptchaVerified(!!value);
+  const handleClickShowPassword = () => setShowPassword(prev => !prev);
+  const handleCaptchaChange = value => setCaptchaVerified(!!value);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!emailOrPhone || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
     if (captchaVerified) {
+      // Here, you could add your authentication logic
       history.push("/chat");
     } else {
       alert("Please complete the CAPTCHA");
@@ -62,10 +70,14 @@ const Login = () => {
           Sign in to your account
         </Typography>
 
+        {error && <Typography color="error">{error}</Typography>}
+
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
             label="Phone number or email"
+            value={emailOrPhone}
+            onChange={(e) => setEmailOrPhone(e.target.value)}
             sx={{
               mb: 2.5,
               "& .MuiOutlinedInput-root": {
@@ -83,15 +95,13 @@ const Login = () => {
             label="Password"
             type={showPassword ? "text" : "password"}
             variant="outlined"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
-                    aria-label={
-                      showPassword
-                        ? "hide the password"
-                        : "display the password"
-                    }
+                    aria-label={showPassword ? "hide the password" : "display the password"}
                     onClick={handleClickShowPassword}
                     edge="end"
                   >
@@ -114,7 +124,7 @@ const Login = () => {
           />
           <Box textAlign={"end"}>
             <a
-              href="#"
+              href="/forgot-password" // Updated to a valid URL
               style={{ color: "#007BFF", textDecoration: "none", fontSize: 14 }}
             >
               Forgot password?
@@ -124,20 +134,16 @@ const Login = () => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{
-              my: 2,
-              backgroundColor: "#007BFF",
-              color: "#fff",
-            }}
+            sx={{ my: 2, backgroundColor: "#007BFF", color: "#fff" }}
           >
             Sign in
           </SignInButton>
-          
+
           {/* CAPTCHA Component */}
           <ReCAPTCHA
             sitekey="6LeQ4XAUAAAAAAyEQGUBaWbzxAsvhdzOVY8mq2yR"
             onChange={handleCaptchaChange}
-            style={{ marginTop: "16px", marginLeft: "25px" }} 
+            style={{ marginTop: "16px", marginLeft: "25px" }}
           />
         </form>
 
@@ -149,12 +155,7 @@ const Login = () => {
             <img src={apple} alt="apple" style={{ width: 22 }} />
             Sign in with Apple ID
           </SignInButton>
-          <SignInButton
-            sx={{ my: 1.5 }}
-            focusRipple={false}
-            fullWidth
-            variant="contained"
-          >
+          <SignInButton sx={{ my: 1.5 }} focusRipple={false} fullWidth variant="contained">
             <img src={google} alt="google" style={{ width: 20 }} />
             Sign in with Google
           </SignInButton>
@@ -163,14 +164,9 @@ const Login = () => {
             Sign in with Facebook
           </SignInButton>
         </Box>
-        <Typography
-          marginTop={1}
-          textAlign="center"
-          fontWeight={500}
-          fontSize={"14px"}
-        >
+        <Typography marginTop={1} textAlign="center" fontWeight={500} fontSize={"14px"}>
           Don’t you have an account?{" "}
-          <a href="#" style={{ color: "#007BFF" }}>
+          <a href="/signup" style={{ color: "#007BFF" }}> // Updated to a valid URL
             Sign up
           </a>
         </Typography>
